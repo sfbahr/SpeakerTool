@@ -17,66 +17,106 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-public class RecordActivity extends Activity {
-private static final int REQUEST_CODE = 1234;
-Button Start;
-TextView Speech;
-Dialog match_text_dialog;
-ListView textlist;
-ArrayList<String> matches_text;
+
+/**
+ *  Allows the user to record their speech and shows them how long they've been
+ *  talking. After they stop recording it takes them to the results screen.
+ *
+ *  @author Me
+ *  @version Oct 4, 2014
+ */
+public class RecordActivity
+    extends Activity
+{
+    private static final int  REQUEST_CODE = 1234;
+    private Button            Start;
+    private TextView          Speech;
+    private Dialog            match_text_dialog;
+    private ListView          textlist;
+    private ArrayList<String> matches_text;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
         Start = (Button)findViewById(R.id.start_reg);
         Speech = (TextView)findViewById(R.id.speech);
         Start.setOnClickListener(new OnClickListener() {
-        @Override
-       public void onClick(View v) {
-          if(isConnected()){
-           Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-           intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-           RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-           startActivityForResult(intent, REQUEST_CODE);
-               }
-          else{
-            Toast.makeText(getApplicationContext(), "Plese Connect to Internet", Toast.LENGTH_LONG).show();
-          }}
+            @Override
+            public void onClick(View v)
+            {
+                if (isConnected())
+                {
+                    Intent intent =
+                        new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(
+                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    startActivityForResult(intent, REQUEST_CODE);
+                }
+                else
+                {
+                    Toast.makeText(
+                        getApplicationContext(),
+                        "Plese Connect to Internet",
+                        Toast.LENGTH_LONG).show();
+                }
+            }
         });
-}
-    
-    public  boolean  isConnected()
+    }
+
+
+    public boolean isConnected()
     {
-      ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo net = cm.getActiveNetworkInfo();
-    if (net!=null && net.isAvailable() && net.isConnected()) {
-        return true;
-    } else {
-        return false;
+        ConnectivityManager cm =
+            (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo net = cm.getActiveNetworkInfo();
+        if (net != null && net.isAvailable() && net.isConnected())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
-    }
+
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-     if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-     match_text_dialog = new Dialog(RecordActivity.this);
-     match_text_dialog.setContentView(R.layout.fragment_record);
-     match_text_dialog.setTitle("Select Matching Text");
-     textlist = (ListView)match_text_dialog.findViewById(R.id.list);
-     matches_text = data
-         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-     ArrayAdapter<String> adapter =    new ArrayAdapter<String>(this,
-           android.R.layout.simple_list_item_1, matches_text);
-     textlist.setAdapter(adapter);
-     textlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-     @Override
-     public void onItemClick(AdapterView<?> parent, View view,
-                             int position, long id) {
-       Speech.setText("You have said " +matches_text.get(position));
-       match_text_dialog.hide();
-     }
- });
-     match_text_dialog.show();
-     }
-     super.onActivityResult(requestCode, resultCode, data);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK)
+        {
+            match_text_dialog = new Dialog(RecordActivity.this);
+            match_text_dialog.setContentView(R.layout.fragment_record);
+            match_text_dialog.setTitle("Select Matching Text");
+            textlist = (ListView)match_text_dialog.findViewById(R.id.list);
+            matches_text =
+                data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            ArrayAdapter<String> adapter =
+                new ArrayAdapter<String>(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    matches_text);
+            textlist.setAdapter(adapter);
+            textlist
+                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(
+                        AdapterView<?> parent,
+                        View view,
+                        int position,
+                        long id)
+                    {
+                        Speech.setText("You have said "
+                            + matches_text.get(position));
+                        match_text_dialog.hide();
+                    }
+                });
+            match_text_dialog.show();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
