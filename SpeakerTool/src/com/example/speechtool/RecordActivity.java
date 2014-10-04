@@ -1,173 +1,82 @@
 package com.example.speechtool;
 
-import java.util.Locale;
-import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
-import android.support.v13.app.FragmentPagerAdapter;
+import java.util.ArrayList;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.speech.RecognizerIntent;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
-
-public class RecordActivity
-    extends Activity
-{
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a {@link FragmentPagerAdapter}
-     * derivative, which will keep every loaded fragment in memory. If this
-     * becomes too memory intensive, it may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager            mViewPager;
-
-
+import android.widget.Toast;
+public class RecordActivity extends Activity {
+private static final int REQUEST_CODE = 1234;
+Button Start;
+TextView Speech;
+Dialog match_text_dialog;
+ListView textlist;
+ArrayList<String> matches_text;
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager)findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+        Start = (Button)findViewById(R.id.start_reg);
+        Speech = (TextView)findViewById(R.id.speech);
+        Start.setOnClickListener(new OnClickListener() {
+        @Override
+       public void onClick(View v) {
+          if(isConnected()){
+           Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+           intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+           RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+           startActivityForResult(intent, REQUEST_CODE);
+               }
+          else{
+            Toast.makeText(getApplicationContext(), "Plese Connect to Internet", Toast.LENGTH_LONG).show();
+          }}
+        });
+}
+    
+    public  boolean  isConnected()
     {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.record, menu);
+      ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo net = cm.getActiveNetworkInfo();
+    if (net!=null && net.isAvailable() && net.isConnected()) {
         return true;
+    } else {
+        return false;
     }
-
-
+    }
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings)
-        {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+     if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+     match_text_dialog = new Dialog(RecordActivity.this);
+     match_text_dialog.setContentView(R.layout.fragment_record);
+     match_text_dialog.setTitle("Select Matching Text");
+     textlist = (ListView)match_text_dialog.findViewById(R.id.list);
+     matches_text = data
+         .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+     ArrayAdapter<String> adapter =    new ArrayAdapter<String>(this,
+           android.R.layout.simple_list_item_1, matches_text);
+     textlist.setAdapter(adapter);
+     textlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+     @Override
+     public void onItemClick(AdapterView<?> parent, View view,
+                             int position, long id) {
+       Speech.setText("You have said " +matches_text.get(position));
+       match_text_dialog.hide();
+     }
+ });
+     match_text_dialog.show();
+     }
+     super.onActivityResult(requestCode, resultCode, data);
     }
-
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter
-        extends FragmentPagerAdapter
-    {
-
-        public SectionsPagerAdapter(FragmentManager fm)
-        {
-            super(fm);
-        }
-
-
-        @Override
-        public Fragment getItem(int position)
-        {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class
-            // below).
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-
-        @Override
-        public int getCount()
-        {
-            // Show 3 total pages.
-            return 3;
-        }
-
-
-        @Override
-        public CharSequence getPageTitle(int position)
-        {
-            Locale l = Locale.getDefault();
-            switch (position)
-            {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-            }
-            return null;
-        }
-    }
-
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment
-        extends Fragment
-    {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-
-        /**
-         * Returns a new instance of this fragment for the given section number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber)
-        {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-
-        public PlaceholderFragment()
-        {
-        }
-
-
-        @Override
-        public View onCreateView(
-            LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState)
-        {
-            View rootView =
-                inflater.inflate(R.layout.fragment_record, container, false);
-            return rootView;
-        }
-    }
-
 }
