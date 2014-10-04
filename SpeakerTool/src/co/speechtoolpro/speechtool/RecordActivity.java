@@ -48,7 +48,7 @@ public class RecordActivity
         if (recording)
         {
             timer.stop();
-            toggleButton.setText(R.string.start_recording);
+            toggleButton.setText(R.string.restart_recording);
             recordingDot.setImageResource(R.drawable.recording_dot_empty);
         }
         else
