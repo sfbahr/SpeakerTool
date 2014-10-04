@@ -3,7 +3,18 @@ package co.speechtoolpro.speechtool;
 import android.widget.ImageView;
 import android.os.SystemClock;
 import android.widget.Chronometer;
+import static android.widget.Toast.makeText;
+import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import edu.cmu.pocketsphinx.Assets;
+import edu.cmu.pocketsphinx.Hypothesis;
+import edu.cmu.pocketsphinx.RecognitionListener;
+import edu.cmu.pocketsphinx.SpeechRecognizer;
+
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -28,11 +39,12 @@ import android.widget.Toast;
  *  @author Me
  *  @version Oct 4, 2014
  */
-public class RecordActivity
-    extends Activity
+public class RecordActivity extends Activity implements RecognitionListener
 {
     private static final int  REQUEST_CODE = 1234;
     private Chronometer       timer;
+    private static final String KWS_SEARCH = "wakeup";
+    
     private Button            Start;
     private TextView          Speech;
     private Dialog            match_text_dialog;
@@ -41,6 +53,7 @@ public class RecordActivity
     private boolean           recording;
     private ImageView         recordingDot;
 
+    private SpeechRecognizer recognizer;
 
     public void toggleRecording(View view)
     {
@@ -67,6 +80,13 @@ public class RecordActivity
     {
         recording = false;
         super.onCreate(savedInstanceState);
+        System.out.println("The program is starting");
+        
+        // Recognizer initialization is a time-consuming and it involves IO,
+        // so we execute it in async task
+        
+        onPostExecute(doInBackground());
+
         setContentView(R.layout.activity_record);
         Start = (Button)findViewById(R.id.start_reg);
         Speech = (TextView)findViewById(R.id.speech);
@@ -148,4 +168,83 @@ public class RecordActivity
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+    
+    
+    private void setupRecognizer(File assetsDir) {
+		System.out.println("******setUp******");
+
+        File modelsDir = new File(assetsDir, "models");
+		System.out.println("******setUp1******");
+		defaultSetup();
+		System.out.println("******setUp1.5******");
+        recognizer = defaultSetup()
+                .setAcousticModel(new File(modelsDir, "hmm/en-us-semi"))
+                .setDictionary(new File(modelsDir, "dict/cmu07a.dic"))
+                .setRawLogDir(assetsDir).setKeywordThreshold(1e-20f)
+                .getRecognizer();
+		System.out.println("******setUp2******");
+        recognizer.addListener(this);
+		System.out.println("******setUp3******");
+
+    }
+
+
+	@Override
+	public void onBeginningOfSpeech() {
+		System.out.println("******Beginning of speech******");
+		
+	}
+
+
+	@Override
+	public void onEndOfSpeech() {
+		System.out.println("******Got to the end of the speech.******");
+		
+	}
+
+
+	@Override
+	public void onPartialResult(Hypothesis hypothesis) {
+		System.out.println("******Got partial result.******");
+
+		onResult( hypothesis);
+		
+	}
+
+
+    @Override
+    public void onResult(Hypothesis hypothesis) {
+        //((TextView) findViewById(R.id.result_text)).setText("");
+        if (hypothesis != null) {
+            String text = hypothesis.getHypstr();
+        	System.out.println("On results result is:"+hypothesis);
+        	System.out.println(text);
+            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+    }
+    private void switchSearch(String searchName) {
+    	System.out.println("Switch serach" +searchName);
+        recognizer.stop();
+        recognizer.startListening(searchName);
+    }
+    
+
+        protected Exception doInBackground(Void... params) {
+            try {
+                Assets assets = new Assets(RecordActivity.this);
+                File assetDir = assets.syncAssets();
+                setupRecognizer(assetDir);
+            } catch (IOException e) {
+                return e;
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Exception result) {
+            if (result != null) {
+            	System.out.println("Failed to init recognizer "+result);
+            } else {
+                switchSearch(KWS_SEARCH);
+            }
+        }
 }
