@@ -10,8 +10,11 @@
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_above="@+id/button1"
-         android:layout_centerHorizontal="true"
-         android:text="test" />
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentRight="true"
+         android:gravity="center"
+         android:text="test"
+         android:textSize="100sp" />
 
      <TextView
          android:id="@+id/welcome"
