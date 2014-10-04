@@ -1,5 +1,8 @@
 package co.speechtoolpro.speechtool;
 
+import android.widget.ImageView;
+import android.os.SystemClock;
+import android.widget.Chronometer;
 import java.util.ArrayList;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -29,20 +32,46 @@ public class RecordActivity
     extends Activity
 {
     private static final int  REQUEST_CODE = 1234;
+    private Chronometer       timer;
     private Button            Start;
     private TextView          Speech;
     private Dialog            match_text_dialog;
     private ListView          textlist;
     private ArrayList<String> matches_text;
+    private boolean           recording;
+    private ImageView         recordingDot;
 
+
+    public void toggleRecording(View view)
+    {
+        Button toggleButton = (Button) view;
+        if (recording)
+        {
+            timer.stop();
+            toggleButton.setText(R.string.start_recording);
+            recordingDot.setImageResource(R.drawable.recording_dot_empty);
+        }
+        else
+        {
+            timer.setBase(SystemClock.elapsedRealtime());
+            timer.start();
+            toggleButton.setText(R.string.stop_recording);
+            recordingDot.setImageResource(R.drawable.blinking_recording_dot);
+        }
+        System.out.println("Please print me");
+        recording = !recording;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        recording = false;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
         Start = (Button)findViewById(R.id.start_reg);
         Speech = (TextView)findViewById(R.id.speech);
+        timer = (Chronometer)findViewById(R.id.timer);
+        recordingDot = (ImageView)findViewById(R.id.imageView1);
         Start.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v)

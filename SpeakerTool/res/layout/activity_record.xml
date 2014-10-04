@@ -1,27 +1,62 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity" >
-    
-    <TextView
-        android:id="@+id/welcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="30sp"
-        android:layout_gravity="center"
-        android:text="@string/welcome_text" />
-   <Button
-        android:id="@+id/start_reg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/start_reg" />
+
+     <Chronometer
+         android:id="@+id/timer"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/button1"
+         android:layout_centerHorizontal="true"
+         android:text="test" />
+
      <TextView
-        android:id="@+id/speech"
-        android:textSize="25sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
-</LinearLayout>
+         android:id="@+id/welcome"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentRight="true"
+         android:layout_alignParentTop="true"
+         android:gravity="center"
+         android:text="@string/welcome_text"
+         android:textSize="30sp" />
+
+     <Button
+         android:id="@+id/button1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentLeft="true"
+         android:layout_alignRight="@+id/start_reg"
+         android:onClick="toggleRecording"
+         android:text="@string/start_recording" />
+
+     <TextView
+         android:id="@+id/speech"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/start_reg"
+         android:layout_centerHorizontal="true"
+         android:textSize="25sp" />
+
+     <ImageView
+         android:id="@+id/imageView1"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentBottom="true"
+         android:layout_alignParentRight="true"
+         android:layout_toRightOf="@+id/button1"
+         android:src="@drawable/recording_dot_empty" />
+
+     <Button
+         android:id="@+id/start_reg"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/welcome"
+         android:layout_centerHorizontal="true"
+         android:text="@string/start_reg" />
+
+</RelativeLayout>
