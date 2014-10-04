@@ -7,5 +7,7 @@
     <string name="title_section3">Section 3</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="welcome_text">Speech Recognotion</string>
+    <string name="start_reg">Start Speech Recognition</string>
 
 </resources>
