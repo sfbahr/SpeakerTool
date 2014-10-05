@@ -4,75 +4,56 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-     <Chronometer
-         android:id="@+id/timer"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_above="@+id/button1"
-         android:layout_alignParentLeft="true"
-         android:layout_alignParentRight="true"
-         android:gravity="center"
-         android:text="test"
-         android:textSize="100sp" />
+    <Chronometer
+        android:id="@+id/timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:gravity="center"
+        android:text="test"
+        android:textSize="100sp" />
 
-     <TextView
-         android:id="@+id/welcome"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentLeft="true"
-         android:layout_alignParentRight="true"
-         android:layout_alignParentTop="true"
-         android:gravity="center"
-         android:text="@string/welcome_text"
-         android:textSize="30sp" />
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/recordingIndicator"
+        android:onClick="toggleRecording"
+        android:text="@string/start_recording" />
 
-     <Button
-         android:id="@+id/button1"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentLeft="true"
-         android:layout_alignRight="@+id/start_reg"
-         android:onClick="toggleRecording"
-         android:text="@string/start_recording" />
+    <ImageView
+        android:id="@+id/recordingIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/button1"
+        android:src="@drawable/recording_dot_empty" />
 
-     <TextView
-         android:id="@+id/speech"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_below="@+id/start_reg"
-         android:layout_centerHorizontal="true"
-         android:textSize="25sp" />
+    <EditText
+        android:id="@+id/testEditText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:ems="10"
+        android:hint="Test text here."
+        android:inputType="textMultiLine" >
 
-     <ImageView
-         android:id="@+id/recordingIndicator"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentBottom="true"
-         android:layout_alignParentRight="true"
-         android:layout_alignTop="@+id/button1"
-         android:layout_toRightOf="@+id/button1"
-         android:src="@drawable/recording_dot_empty" />
+        <requestFocus />
+    </EditText>
 
-     <Button
-         android:id="@+id/start_reg"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_below="@+id/welcome"
-         android:layout_centerHorizontal="true"
-         android:text="@string/start_reg" />
-
-     <EditText
-         android:id="@+id/testEditText"
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_below="@+id/speech"
-         android:layout_centerHorizontal="true"
-         android:ems="10"
-         android:hint="Test text here."
-         android:inputType="textMultiLine" >
-
-         <requestFocus />
-     </EditText>
+    <Button
+        android:id="@+id/previousScores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/testEditText"
+        android:layout_centerHorizontal="true"
+        android:onClick="scoresClick"
+        android:text="View last score" />
 
 </RelativeLayout>

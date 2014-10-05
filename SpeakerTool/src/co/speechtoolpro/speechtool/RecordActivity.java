@@ -47,8 +47,6 @@ public class RecordActivity extends Activity implements RecognitionListener
     private Chronometer       timer;
     private static final String KWS_SEARCH = "wakeup";
 
-    private Button            Start;
-    private TextView          Speech;
     private Dialog            match_text_dialog;
     private ListView          textlist;
     private ArrayList<String> matches_text;
@@ -84,6 +82,11 @@ public class RecordActivity extends Activity implements RecognitionListener
         recording = !recording;
     }
 
+    public void scoresClick(View view)
+    {
+        //go back to ScoreActivity
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -97,32 +100,10 @@ public class RecordActivity extends Activity implements RecognitionListener
         onPostExecute(doInBackground());
 
         setContentView(R.layout.activity_record);
-        Start = (Button)findViewById(R.id.start_reg);
-        Speech = (TextView)findViewById(R.id.speech);
         timer = (Chronometer)findViewById(R.id.timer);
         recordingDot = (ImageView)findViewById(R.id.recordingIndicator);
-        Start.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v)
-            {
-                if (isConnected())
-                {
-                    Intent intent =
-                        new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-                    intent.putExtra(
-                        RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                        RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-                    startActivityForResult(intent, REQUEST_CODE);
-                }
-                else
-                {
-                    Toast.makeText(
-                        getApplicationContext(),
-                        "Plese Connect to Internet",
-                        Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+        getActionBar().setDisplayHomeAsUpEnabled(false);
+
     }
 
 
@@ -147,33 +128,7 @@ public class RecordActivity extends Activity implements RecognitionListener
     {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK)
         {
-            match_text_dialog = new Dialog(RecordActivity.this);
-            match_text_dialog.setContentView(R.layout.fragment_record);
-            match_text_dialog.setTitle("Select Matching Text");
-            textlist = (ListView)match_text_dialog.findViewById(R.id.list);
-            matches_text =
-                data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-            ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(
-                    this,
-                    android.R.layout.simple_list_item_1,
-                    matches_text);
-            textlist.setAdapter(adapter);
-            textlist
-                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(
-                        AdapterView<?> parent,
-                        View view,
-                        int position,
-                        long id)
-                    {
-                        Speech.setText("You have said "
-                            + matches_text.get(position));
-                        match_text_dialog.hide();
-                    }
-                });
-            match_text_dialog.show();
+            //Used for Google Speech Recognition which we removed
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
