@@ -55,6 +55,11 @@ public class RecordActivity extends Activity implements RecognitionListener
 
     private SpeechRecognizer recognizer;
 
+    private static String recognizerKey = "recogKey";
+    String fillerCountList = "";
+    String PreviousFillerList = "";
+    long previousTimeMs;
+    String fillerWord = "umm";
 
     public void toggleRecording(View view)
     {
@@ -70,6 +75,8 @@ public class RecordActivity extends Activity implements RecognitionListener
             scoreIntent.putExtra(EXTRA_TRANSCRIPT, transcript);
             System.out.println("transcript to score: " + transcript);
             startActivity(scoreIntent);
+            
+            recognizer.stop();
         }
         else
         {
@@ -77,6 +84,9 @@ public class RecordActivity extends Activity implements RecognitionListener
             timer.start();
             toggleButton.setText(R.string.stop_recording);
             recordingDot.setImageResource(R.drawable.blinking_recording_dot);
+            
+            startSpeechRecognition();
+            
         }
         System.out.println("Please print me");
         recording = !recording;
@@ -97,8 +107,6 @@ public class RecordActivity extends Activity implements RecognitionListener
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
 
-        onPostExecute(doInBackground());
-
         setContentView(R.layout.activity_record);
         timer = (Chronometer)findViewById(R.id.timer);
         recordingDot = (ImageView)findViewById(R.id.recordingIndicator);
@@ -107,7 +115,7 @@ public class RecordActivity extends Activity implements RecognitionListener
     }
 
 
-    public boolean isConnected()
+/*    public boolean isConnected()
     {
         ConnectivityManager cm =
             (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -120,7 +128,7 @@ public class RecordActivity extends Activity implements RecognitionListener
         {
             return false;
         }
-    }
+    }*/
 
 
     @Override
@@ -133,82 +141,61 @@ public class RecordActivity extends Activity implements RecognitionListener
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-
-    private void setupRecognizer(File assetsDir) {
-		System.out.println("******setUp******");
-
-        File modelsDir = new File(assetsDir, "models");
-		System.out.println("******setUp1******");
-		defaultSetup();
-		System.out.println("******setUp1.5******");
-        recognizer = defaultSetup()
-                .setAcousticModel(new File(modelsDir, "hmm/en-us-semi"))
-                .setDictionary(new File(modelsDir, "dict/cmu07a.dic"))
-                .setRawLogDir(assetsDir).setKeywordThreshold(1e-20f)
-                .getRecognizer();
-		System.out.println("******setUp2******");
-        recognizer.addListener(this);
-		System.out.println("******setUp3******");
-
-    }
-
-
 	@Override
 	public void onBeginningOfSpeech() {
-		System.out.println("******Beginning of speech******");
 
 	}
 
 
 	@Override
 	public void onEndOfSpeech() {
-		System.out.println("******Got to the end of the speech.******");
-
+    	System.out.println("End of speech println");
+        recognizer.stop();
+        recognizer.startListening("default");
 	}
 
 
 	@Override
 	public void onPartialResult(Hypothesis hypothesis) {
-		System.out.println("******Got partial result.******");
-
-		onResult( hypothesis);
-
+    	if (hypothesis != null)
+    		if(SystemClock.elapsedRealtime() - previousTimeMs>1000) {
+    			if(!hypothesis.getHypstr().equals(PreviousFillerList)) {
+    				previousTimeMs = SystemClock.elapsedRealtime();
+    				PreviousFillerList = hypothesis.getHypstr();
+    				fillerCountList = fillerCountList + fillerWord+" ";
+    				System.out.println("on Partial Result  println "+fillerCountList);
+    			}
+    		}
 	}
 
 
     @Override
     public void onResult(Hypothesis hypothesis) {
-        //((TextView) findViewById(R.id.result_text)).setText("");
-        if (hypothesis != null) {
-            String text = hypothesis.getHypstr();
-        	System.out.println("On results result is:"+hypothesis);
-        	System.out.println(text);
-            makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
-        }
+    	
     }
+    
     private void switchSearch(String searchName) {
-    	System.out.println("Switch serach" +searchName);
-        recognizer.stop();
-        recognizer.startListening(searchName);
+    	
     }
-
-
-        protected Exception doInBackground(Void... params) {
-            try {
-                Assets assets = new Assets(RecordActivity.this);
-                File assetDir = assets.syncAssets();
-                setupRecognizer(assetDir);
-            } catch (IOException e) {
-                return e;
-            }
-            return null;
+    private void startSpeechRecognition() {
+        try {
+        	previousTimeMs=SystemClock.elapsedRealtime();
+            Assets assets = new Assets(RecordActivity.this);
+            File assetDir = assets.syncAssets();
+            File modelsDir = new File(assetDir, "models");
+            recognizer = defaultSetup()
+                    .setAcousticModel(new File(modelsDir, "hmm/en-us-semi"))
+                    .setDictionary(new File(modelsDir, "dict/cmu07a.dic"))
+                    .setRawLogDir(assetDir).setKeywordThreshold(1e-2f)
+                    .getRecognizer();
+            recognizer.addListener(this);
+            recognizer.stop();
+            recognizer.addKeyphraseSearch("default", fillerWord);
+            recognizer.startListening("default");
+        } catch (IOException e) {
+        	System.out.println("There was an error onCreate println");
+            return;
         }
-
-        protected void onPostExecute(Exception result) {
-            if (result != null) {
-            	System.out.println("Failed to init recognizer "+result);
-            } else {
-                //switchSearch(KWS_SEARCH);
-            }
-        }
+    }
+    
 }
