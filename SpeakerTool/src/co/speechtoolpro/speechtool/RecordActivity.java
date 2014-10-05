@@ -56,10 +56,10 @@ public class RecordActivity extends Activity implements RecognitionListener
     private SpeechRecognizer recognizer;
 
     private static String recognizerKey = "recogKey";
-    String fillerCountList = "";
-    String PreviousFillerList = "";
-    long previousTimeMs;
-    String fillerWord = "umm";
+    private String fillerCountList = "";
+    private String PreviousFillerList = "";
+    private long previousTimeMs;
+    private String fillerWord = "umm";
 
     public void toggleRecording(View view)
     {
@@ -71,12 +71,13 @@ public class RecordActivity extends Activity implements RecognitionListener
             recordingDot.setImageResource(R.drawable.recording_dot_empty);
             Intent scoreIntent = new Intent(this, ScoreActivity.class);
             EditText input = (EditText) findViewById(R.id.testEditText);
-            String transcript = input.getText().toString();
-            scoreIntent.putExtra(EXTRA_TRANSCRIPT, transcript);
-            System.out.println("transcript to score: " + transcript);
+            //String transcript = input.getText().toString();
+            scoreIntent.putExtra(EXTRA_TRANSCRIPT, fillerCountList);//transcript);
+            //System.out.println("transcript to score: " + transcript);
             startActivity(scoreIntent);
-            
+
             recognizer.stop();
+
         }
         else
         {
@@ -84,17 +85,14 @@ public class RecordActivity extends Activity implements RecognitionListener
             timer.start();
             toggleButton.setText(R.string.stop_recording);
             recordingDot.setImageResource(R.drawable.blinking_recording_dot);
-            
+
+            AnalyzeTranscript.resetFillerCount();
+            fillerCountList = "";
             startSpeechRecognition();
-            
+
         }
         System.out.println("Please print me");
         recording = !recording;
-    }
-
-    public void scoresClick(View view)
-    {
-        //go back to ScoreActivity
     }
 
     @Override
@@ -112,33 +110,6 @@ public class RecordActivity extends Activity implements RecognitionListener
         recordingDot = (ImageView)findViewById(R.id.recordingIndicator);
         getActionBar().setDisplayHomeAsUpEnabled(false);
 
-    }
-
-
-/*    public boolean isConnected()
-    {
-        ConnectivityManager cm =
-            (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo net = cm.getActiveNetworkInfo();
-        if (net != null && net.isAvailable() && net.isConnected())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }*/
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK)
-        {
-            //Used for Google Speech Recognition which we removed
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 	@Override
@@ -171,12 +142,9 @@ public class RecordActivity extends Activity implements RecognitionListener
 
     @Override
     public void onResult(Hypothesis hypothesis) {
-    	
+
     }
-    
-    private void switchSearch(String searchName) {
-    	
-    }
+
     private void startSpeechRecognition() {
         try {
         	previousTimeMs=SystemClock.elapsedRealtime();
@@ -197,5 +165,5 @@ public class RecordActivity extends Activity implements RecognitionListener
             return;
         }
     }
-    
+
 }

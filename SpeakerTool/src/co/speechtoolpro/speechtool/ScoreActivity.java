@@ -28,9 +28,10 @@ public class ScoreActivity
             intent.getStringExtra(RecordActivity.EXTRA_TRANSCRIPT);
 
         TextView textBack = (TextView)findViewById(R.id.lookAtMyText);
-        textBack.setText(AnalyzeTranscript.boldFiller(transcript));
+        //textBack.setText(AnalyzeTranscript.boldFiller(transcript));
+        textBack.setText("Number of umms:");
         TextView scoreView = (TextView) findViewById(R.id.scoreView);
-        scoreView.setText(((Integer)AnalyzeTranscript.getFillerCount()).toString());
+        scoreView.setText(((Integer)AnalyzeTranscript.getFillerCount(transcript)).toString());
     }
 
 

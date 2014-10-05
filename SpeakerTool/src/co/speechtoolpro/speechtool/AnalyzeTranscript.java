@@ -37,8 +37,17 @@ public class AnalyzeTranscript
     /**
      * Must be ran after boldFiller
      */
-    public static int getFillerCount()
+    public static int getFillerCount(String transcript)
     {
+        if (fillerCount == -1)
+        {
+            return StringUtils.countMatches(transcript, "umm");
+        }
         return fillerCount;
+    }
+
+    public static void resetFillerCount()
+    {
+        fillerCount = -1;
     }
 }
