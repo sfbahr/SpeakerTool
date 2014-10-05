@@ -2,8 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity" >
+    android:orientation="vertical" >
 
      <Chronometer
          android:id="@+id/timer"
@@ -46,7 +45,7 @@
          android:textSize="25sp" />
 
      <ImageView
-         android:id="@+id/imageView1"
+         android:id="@+id/recordingIndicator"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:layout_alignParentBottom="true"
@@ -62,5 +61,18 @@
          android:layout_below="@+id/welcome"
          android:layout_centerHorizontal="true"
          android:text="@string/start_reg" />
+
+     <EditText
+         android:id="@+id/testEditText"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_below="@+id/speech"
+         android:layout_centerHorizontal="true"
+         android:ems="10"
+         android:hint="Test text here."
+         android:inputType="textMultiLine" >
+
+         <requestFocus />
+     </EditText>
 
 </RelativeLayout>

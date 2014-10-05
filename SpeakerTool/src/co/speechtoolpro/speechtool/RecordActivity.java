@@ -1,11 +1,5 @@
 package co.speechtoolpro.speechtool;
 
-import android.widget.ImageView;
-import android.os.SystemClock;
-import android.widget.Chronometer;
-import static android.widget.Toast.makeText;
-import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +25,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.os.SystemClock;
+import android.widget.Chronometer;
+import static android.widget.Toast.makeText;
+import static edu.cmu.pocketsphinx.SpeechRecognizerSetup.defaultSetup;
 
 /**
  *  Allows the user to record their speech and shows them how long they've been
@@ -41,10 +41,12 @@ import android.widget.Toast;
  */
 public class RecordActivity extends Activity implements RecognitionListener
 {
+    public final static String EXTRA_TRANSCRIPT =
+        "com.example.myfirstapp.TRANSCRIPT";
     private static final int  REQUEST_CODE = 1234;
     private Chronometer       timer;
     private static final String KWS_SEARCH = "wakeup";
-    
+
     private Button            Start;
     private TextView          Speech;
     private Dialog            match_text_dialog;
@@ -55,6 +57,7 @@ public class RecordActivity extends Activity implements RecognitionListener
 
     private SpeechRecognizer recognizer;
 
+
     public void toggleRecording(View view)
     {
         Button toggleButton = (Button) view;
@@ -63,6 +66,12 @@ public class RecordActivity extends Activity implements RecognitionListener
             timer.stop();
             toggleButton.setText(R.string.restart_recording);
             recordingDot.setImageResource(R.drawable.recording_dot_empty);
+            Intent scoreIntent = new Intent(this, ScoreActivity.class);
+            EditText input = (EditText) findViewById(R.id.testEditText);
+            String transcript = input.getText().toString();
+            scoreIntent.putExtra(EXTRA_TRANSCRIPT, transcript);
+            System.out.println("transcript to score: " + transcript);
+            startActivity(scoreIntent);
         }
         else
         {
@@ -81,17 +90,17 @@ public class RecordActivity extends Activity implements RecognitionListener
         recording = false;
         super.onCreate(savedInstanceState);
         System.out.println("The program is starting");
-        
+
         // Recognizer initialization is a time-consuming and it involves IO,
         // so we execute it in async task
-        
+
         onPostExecute(doInBackground());
 
         setContentView(R.layout.activity_record);
         Start = (Button)findViewById(R.id.start_reg);
         Speech = (TextView)findViewById(R.id.speech);
         timer = (Chronometer)findViewById(R.id.timer);
-        recordingDot = (ImageView)findViewById(R.id.imageView1);
+        recordingDot = (ImageView)findViewById(R.id.recordingIndicator);
         Start.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v)
@@ -168,8 +177,8 @@ public class RecordActivity extends Activity implements RecognitionListener
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-    
-    
+
+
     private void setupRecognizer(File assetsDir) {
 		System.out.println("******setUp******");
 
@@ -192,14 +201,14 @@ public class RecordActivity extends Activity implements RecognitionListener
 	@Override
 	public void onBeginningOfSpeech() {
 		System.out.println("******Beginning of speech******");
-		
+
 	}
 
 
 	@Override
 	public void onEndOfSpeech() {
 		System.out.println("******Got to the end of the speech.******");
-		
+
 	}
 
 
@@ -208,7 +217,7 @@ public class RecordActivity extends Activity implements RecognitionListener
 		System.out.println("******Got partial result.******");
 
 		onResult( hypothesis);
-		
+
 	}
 
 
@@ -227,7 +236,7 @@ public class RecordActivity extends Activity implements RecognitionListener
         recognizer.stop();
         recognizer.startListening(searchName);
     }
-    
+
 
         protected Exception doInBackground(Void... params) {
             try {
@@ -244,7 +253,7 @@ public class RecordActivity extends Activity implements RecognitionListener
             if (result != null) {
             	System.out.println("Failed to init recognizer "+result);
             } else {
-                switchSearch(KWS_SEARCH);
+                //switchSearch(KWS_SEARCH);
             }
         }
 }
