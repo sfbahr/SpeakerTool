@@ -1,5 +1,7 @@
 package co.speechtoolpro.speechtool;
 
+import android.text.Html;
+import org.apache.commons.lang3.StringUtils;
 import android.annotation.TargetApi;
 import android.app.TaskStackBuilder;
 import android.support.v4.app.NavUtils;
@@ -14,7 +16,6 @@ import android.view.MenuItem;
 public class ScoreActivity
     extends Activity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -27,7 +28,9 @@ public class ScoreActivity
             intent.getStringExtra(RecordActivity.EXTRA_TRANSCRIPT);
 
         TextView textBack = (TextView)findViewById(R.id.lookAtMyText);
-        textBack.setText(transcript);
+        textBack.setText(AnalyzeTranscript.boldFiller(transcript));
+        TextView scoreView = (TextView) findViewById(R.id.scoreView);
+        scoreView.setText(((Integer)AnalyzeTranscript.getFillerCount()).toString());
     }
 
 
