@@ -4,17 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Chronometer
-        android:id="@+id/timer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/button1"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:text="test"
-        android:textSize="100sp" />
-
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -47,13 +36,15 @@
         <requestFocus />
     </EditText>
 
-    <Button
-        android:id="@+id/previousScores"
+    <Chronometer
+        android:id="@+id/timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/testEditText"
-        android:layout_centerHorizontal="true"
-        android:onClick="scoresClick"
-        android:text="View last score" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="test"
+        android:textSize="100sp" />
 
 </RelativeLayout>
