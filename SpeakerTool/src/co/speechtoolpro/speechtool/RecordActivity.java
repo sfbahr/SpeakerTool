@@ -112,13 +112,11 @@ public class RecordActivity extends Activity implements RecognitionListener
 
     }
 
-	@Override
 	public void onBeginningOfSpeech() {
 
 	}
 
 
-	@Override
 	public void onEndOfSpeech() {
     	System.out.println("End of speech println");
         recognizer.stop();
@@ -126,7 +124,6 @@ public class RecordActivity extends Activity implements RecognitionListener
 	}
 
 
-	@Override
 	public void onPartialResult(Hypothesis hypothesis) {
     	if (hypothesis != null)
     		if(SystemClock.elapsedRealtime() - previousTimeMs>1000) {
@@ -140,7 +137,6 @@ public class RecordActivity extends Activity implements RecognitionListener
 	}
 
 
-    @Override
     public void onResult(Hypothesis hypothesis) {
 
     }
